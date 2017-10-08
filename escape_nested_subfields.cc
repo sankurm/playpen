@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include <iterator>
 using namespace std;
 
@@ -10,9 +9,8 @@ auto escape_nested_subfields(const std::string& input) {
 	auto outIt = std::back_inserter(output);
 	int nesting_level{0};
 	auto next = input.cbegin() + 1;
-	//Iterate through input looking at 2 chars at a time
+	
 	for (auto curr = input.cbegin(); next != input.cend(); ++curr, ++next) {
-		//Logic only needed for quotes
 		if (*curr == '\"') {
 			if ((nesting_level > 1) || (*next != ',' && nesting_level == 1))
 				*outIt++ = '\\';
@@ -36,4 +34,3 @@ int main() {
 	std::cout << "Output: " << escape_nested_subfields(input) << std::endl;
 	return 0;
 }
-
