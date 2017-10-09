@@ -12,12 +12,21 @@ auto escape_nested_subfields(const std::string& input) {
 	
 	for (auto curr = input.cbegin(); next != input.cend(); ++curr, ++next) {
 		if (*curr == '\"') {
+			bool is_level_end = false;
+			auto n = next;
+			//int level_count = 1;
+			for (; n != input.cend() && *n == '\"'; ++n)
+				;	//++level_count;
+			if (*n == ',')
+				is_level_end = true;
 			if ((nesting_level > 1) || (*next != ',' && nesting_level == 1))
 				*outIt++ = '\\';
 
-			if (*next == ',') {
+			if (is_level_end) {
+				//nesting_level -= level_count;
 				--nesting_level;
 			} else {
+				//nesting_level += level_count;
 				++nesting_level;
 			}
 		}
