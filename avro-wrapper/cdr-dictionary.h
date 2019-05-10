@@ -16,10 +16,17 @@ DataGetterMap dataGetterMap = {
 		return cdr.type == Isup? GenericDatum{cdr.detail.called_no}: GenericDatum{}; }}},
 };
 
-//TODO: Is this really needed? 
+//DataGetter Dictionary for Cdr
 class CdrDictionary
 {
 	CdrDictionary(DataGetterMap& m) : dataGetterMap(m) {}
+	const DataGetter& find(const std::string& field_name) const {
+		if (auto it = dataGetterMap.find(field_name); it != end(dataGetterMap)) {
+			return it->second;
+		}
+		static DataGetter nullGetter{[](const Cdr&) { return GenericDatum{}; }};
+		return nullGetter;
+	}
 };
 
 #endif //_CDR_DICTIONARY_H_
