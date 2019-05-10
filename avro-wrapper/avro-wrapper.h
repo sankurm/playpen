@@ -24,9 +24,9 @@ namespace AVRO
 		SchemaRegistry(const SchemaRegistry& other);
 		SchemaRegistry(SchemaRegistry&& other);
 		
-		register(SchemaType type, Schema& schema);
-		find(SchemaType type) const;
-		unregister(SchemaType type);
+		void register(SchemaType type, Schema& schema);
+		const Schema& find(SchemaType type) const;
+		void unregister(SchemaType type);
 		
 		private:
 		//TODO: Should this be ValidSchema instead? 
@@ -39,6 +39,16 @@ namespace AVRO
 		
 		template<typename T>
 		owning_buffer encode(const T& data, const dictionary& dict) const;
+			//Encoder en;
+			//writer = en.memoryBufferWriter();
+			//const int no_fields = schema.names();
+			//for (int i = 0; i < no_names; i++) {
+				//auto fieldName = schema.nameAt(i);
+				//auto functor = dict.find(fieldName);
+				//auto value = functor(data);
+				//writer.writeData(value);
+			//}
+			//return writer.getBuffer();
 		
 		private:
 			Schema schema;
