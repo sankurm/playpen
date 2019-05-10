@@ -1,6 +1,8 @@
 #ifndef _CDR_DICTIONARY_H_
 #define _CDR_DICTIONARY_H_
 
+#include "cdr.h"
+
 #include <map>
 #include <functional>
 #include <string>
