@@ -1,6 +1,9 @@
 #ifndef _AVRO_WRAPPER_H_
 #define _AVRO_WRAPPER_H_
 
+#include "CdrDictionary.h"
+#include "Cdr.h"
+
 #include <memory>
 #include <utility>
 
@@ -16,6 +19,7 @@
 namespace AVRO
 {
 	using owning_buffer = std::pair<std::unique_ptr<uint8_t[]>, int>;
+	using SchemaType = CdrType;
 	
 	class SchemaRegistry
 	{
@@ -39,30 +43,39 @@ namespace AVRO
 		
 		template<typename T>
 		owning_buffer encode(const T& data, const dictionary& dict) const {
-			Encoder en;
-			writer = en.memoryBufferWriter();
-			const int no_fields = schema.names();
-			for (int i = 0; i < no_names; i++) {
-				auto fieldName = schema.nameAt(i);
-				auto functor = dict.find(fieldName);
-				auto value = functor(data);
-				writer.writeData(value);
-			}
+			EncoderPtr encoder = binaryEncoder();
+			auto out = memoryOutputStream(8096);
+			//GenericWriter writer{validSchema, encoderPtr};
+			StreamWriter writer{out};	//encoder not used!!!???
+			encodeFields(writer, data, dict);
 			return writer.getBuffer();
 		}
 		
 		private:
+			template<typename T>
+			void encodeFields(GenericWriter& writer, const T& data, const dictionary& dict) const {
+				const int no_fields = schema.root().names();
+				for (int i = 0; i < no_names; i++) {
+					const std::string& fieldName = schema.root().nameAt(i);
+					const DataGetter& getter = dict.find(fieldName);
+					GenericDatum value = getter(data);
+					writer.write(value);
+				}
+				writer.flush();
+			}
 			Schema schema;
 	};
   
-	//Free function wrapper for 
+	//Free function wrapper for Avro encoding
 	template<typename T>
-	owning_buffer avro_encode(const T& data, const dictionary& dict, SchemaType type) {
-		const Schema& schema = schemaRegistry.find(type);
+	owning_buffer avro_encode(const T& data, const dictionary& dict, const Schema& schema) {
 		return AvroEncoder{schema}.encode(data, dict);
 	}
 	template<typename T>
-	owning_buffer avro_encode(const T& data, const dictionary& dict, const Schema& schema);
+	owning_buffer avro_encode(const T& data, const dictionary& dict, SchemaType type) {
+		const Schema& schema = schemaRegistry.find(type);
+		return avro_encode(data, dict, schema);
+	}
 #endif
 
 	//Caller to be owner of returned buffer - _MUST_ free
