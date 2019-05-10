@@ -1,0 +1,66 @@
+#ifndef _AVRO_WRAPPER_H_
+#define _AVRO_WRAPPER_H_
+
+#include <memory>
+#include <utility>
+
+#include <avro> //apache avro - check the right include
+
+#ifndef __cplusplus
+#define EXTERN_C 
+#else
+#define EXTERN_C extern "C"
+#endif
+
+#ifdef __cplusplus
+namespace AVRO
+{
+	using owning_buffer = std::pair<std::unique_ptr<uint8_t[]>, int>;
+	
+	class SchemaRegistry
+	{
+		SchemaRegistry(const std::map<SchemaType, Schema>& registry);
+		SchemaRegistry(std::map<SchemaType, Schema>&& registry);
+		SchemaRegistry(const SchemaRegistry& other);
+		SchemaRegistry(SchemaRegistry&& other);
+		
+		register(SchemaType type, Schema& schema);
+		find(SchemaType type) const;
+		unregister(SchemaType type);
+		
+		private:
+		//TODO: Should this be ValidSchema instead? 
+		std::map<SchemaType, Schema> registry;
+	};
+	
+	class AvroEncoder
+	{
+		AvroEncoder(const Schema& schema);
+		
+		template<typename T>
+		owning_buffer encode(const T& data, const dictionary& dict) const;
+		
+		private:
+			Schema schema;
+	};
+  
+	//Free function wrapper for 
+	template<typename T>
+	owning_buffer avro_encode(const T& data, const dictionary& dict, SchemaType type) {
+		const Schema& schema = schemaRegistry.find(type);
+		return AvroEncoder{schema}.encode(data, dict);
+	}
+	template<typename T>
+	owning_buffer avro_encode(const T& data, const dictionary& dict, const Schema& schema);
+#endif
+
+	//Caller to be owner of returned buffer - _MUST_ free
+	EXTERN_C uint8_t* avro_encode(void* data, dictionary* dict, SchemaType type) {
+		return avro_encode(reinterpret_cast<const T_CS_CDR_MSG&>(*data), *dict, type).first.release();
+	}
+  
+#ifdef __cplusplus
+}
+#endif
+
+#endif  //_AVRO_WRAPPER_H_
