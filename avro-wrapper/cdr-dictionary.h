@@ -25,6 +25,14 @@ namespace AVRO
 			GenericDatum{cdr.detail.caller_no}: 
 			GenericDatum{};
 	}
+	auto type_value_getter = [](CdrType type, auto callable_value_getter, const Cdr& cdr) {
+		return cdr.type == type? 
+			GenericDatum{callable_value_getter(cdr)}:
+			GenericDatum{};
+	};
+	auto hop_by_hop_id_getter = [](const Cdr& cdr) { return cdr.detail.diameter.hop_by_hop_id; };
+	auto end_to_end_id_getter = [](const Cdr& cdr) { return cdr.detail.diameter.end_to_end_id; };
+	auto request_code_getter = [](const Cdr& cdr) { return cdr.detail.diameter.request_code; };
 
 	//The lookup of the DataGetter against the Avro field name
 	DataGetterMap dataGetterMap = {
@@ -33,6 +41,12 @@ namespace AVRO
 		{"isup.caller-no"s, {isup_caller_no_getter}},
 		{"isup.called-no"s, {[](const Cdr& cdr) { 
 			return cdr.type == Isup? GenericDatum{cdr.detail.called_no}: GenericDatum{}; }}},
+		{"diameter.hop_by_hop_id"s, {[](const Cdr& cdr) { 
+			return type_value_getter(Diameter, hop_by_hop_id_getter, cdr); }}},
+		{"diameter.end_to_end_id"s, {[](const Cdr& cdr) { 
+			return type_value_getter(Diameter, end_to_end_id_getter, cdr); }}},
+		{"diameter.request_code"s, {[](const Cdr& cdr) { 
+			return type_value_getter(Diameter, request_code_getter, cdr); }}}
 	};
 
 	//DataGetter Dictionary Abstraction for Cdr
