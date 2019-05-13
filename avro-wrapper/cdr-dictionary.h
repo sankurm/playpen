@@ -17,12 +17,12 @@ namespace AVRO
 	//DataGetters
 	auto diameter_app_id_getter = [](const Cdr& cdr) -> GenericDatum {
 		return cdr.type == Diameter? 
-			GenericDatum{cdr.detail.app_id}:
+			GenericDatum{cdr.detail.diameter.app_id}:
 			GenericDatum{};
 	};
 	GenericDatum isup_caller_no_getter(const Cdr& cdr) {
 		return cdr.type == Isup? 
-			GenericDatum{cdr.detail.caller_no}: 
+			GenericDatum{cdr.detail.isup.caller_no}: 
 			GenericDatum{};
 	}
 	auto type_value_getter = [](CdrType type, auto callable_value_getter, const Cdr& cdr) {
@@ -40,7 +40,7 @@ namespace AVRO
 		{"diameter.application-id"s, {diameter_app_id_getter}},
 		{"isup.caller-no"s, {isup_caller_no_getter}},
 		{"isup.called-no"s, {[](const Cdr& cdr) { 
-			return cdr.type == Isup? GenericDatum{cdr.detail.called_no}: GenericDatum{}; }}},
+			return cdr.type == Isup? GenericDatum{cdr.detail.isup.called_no}: GenericDatum{}; }}},
 		{"diameter.hop_by_hop_id"s, {[](const Cdr& cdr) { 
 			return type_value_getter(Diameter, hop_by_hop_id_getter, cdr); }}},
 		{"diameter.end_to_end_id"s, {[](const Cdr& cdr) { 
