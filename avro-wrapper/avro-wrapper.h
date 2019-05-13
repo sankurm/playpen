@@ -23,14 +23,20 @@ namespace AVRO
 	
 	class SchemaRegistry
 	{
-		SchemaRegistry(const std::map<SchemaType, Schema>& registry);
-		SchemaRegistry(std::map<SchemaType, Schema>&& registry);
-		SchemaRegistry(const SchemaRegistry& other);
-		SchemaRegistry(SchemaRegistry&& other);
+		SchemaRegistry(const std::map<SchemaType, Schema>& _registry) : registry(_registry) {}
+		SchemaRegistry(std::map<SchemaType, Schema>&& _registry) : registry(_registry) {}
+		SchemaRegistry(const SchemaRegistry& other) : registry(other.registry) {}
+		SchemaRegistry(SchemaRegistry&& other) : registry(other.registry) {}
 		
-		void register(SchemaType type, Schema& schema);
-		const Schema& find(SchemaType type) const;
-		void unregister(SchemaType type);
+		void register(SchemaType type, const Schema& schema) { registry[type] = schema; }
+		void register(SchemaType type, Schema&& schema) { registry[type] = schema; }
+		const Schema& find(SchemaType type) const {
+			if (auto it = registry.find(type); it != end(registry)) {
+				return it->second;
+			}
+			return avro::NullSchema{};
+		}
+		void unregister(SchemaType type) { registry.erase(type); }
 		
 		private:
 		//TODO: Should this be ValidSchema instead? 
