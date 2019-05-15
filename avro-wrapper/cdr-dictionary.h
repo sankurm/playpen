@@ -11,6 +11,7 @@
 
 namespace AVRO
 {
+	//template<typename CdrType>???
 	using DataGetter = std::function<GenericDatum(const Cdr&)>;
 	using DataGetterMap = std::map<std::string, DataGetter>;
 
