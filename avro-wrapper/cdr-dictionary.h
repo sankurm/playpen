@@ -64,6 +64,13 @@ namespace AVRO
 		private:
 		DataGetterMap dataGetterMap;
 	};
+	
+#ifndef __cplusplus
+	//Fake dictionary objects for the C world
+	//Need extern? 
+	CdrDictionary cs_dict{dataGetterMap};
+	CdrDictionary epc_dict{dataGetterMap};
+#endif
 }
 
 #endif //_CDR_DICTIONARY_H_
