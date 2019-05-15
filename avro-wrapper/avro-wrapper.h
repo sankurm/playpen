@@ -124,9 +124,20 @@ inline void AVRO::SchemaRegistry::unreg(SchemaType type) {
 #endif
 
 #ifndef __cplusplus
-//Caller to be owner of returned buffer - _MUST_ free
-	EXTERN_C uint8_t* avro_encode(void* data, dictionary* dict, SchemaType type) {
-		return avro_encode(reinterpret_cast<const T_CS_CDR_MSG&>(*data), *dict, type).first.release();
+	struct c_owning_buffer
+	{
+		uint8_t* data;
+		int len;
+	};
+	//Caller to be owner of returned buffer - _MUST_ free
+	EXTERN_C c_owning_buffer avro_encode_cs(void* data, SchemaType type) {
+		auto buff = avro_encode(reinterpret_cast<const T_CS_CDR_MSG&>(*data), cs_dict, type);
+		return {buff.first.release(), buff.second};
+	}
+	//Caller to be owner of returned buffer - _MUST_ free
+	EXTERN_C c_owning_buffer avro_encode_epc(void* data, SchemaType type) {
+		auto buff = avro_encode(reinterpret_cast<const T_EPC_CDR_MSG&>(*data), epc_dict, type);
+		return {buff.first.release(), buff.second};
 	}
 #endif
   
