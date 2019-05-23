@@ -14,18 +14,30 @@ std::map<std::string, std::function<int(int)>> dict = {
     {"Tripler"s, {[](int i) { return i + i + i; }}},
     {"Quadrupler"s, {quadrupler}},
     {"5 times"s, {[](int i) { return i * 5; }}},
-    {"6 times multiplier"s, {[](int i) { return i * 6; }}}
+    {"6 times multiplier"s, {[](int i) { return i * 6; }}},
+    {"7 fold"s, {[](int i) { return i * 7; }}},
+    {"multiply by 8"s, {[](int i) { return i * 8; }}},
+    {"x 9"s, {[](int i) { return i * 9; }}},
+    {"ten times"s, {[](int i) { return i * 10; }}}
 };
 
-std::string get_options(const std::map<std::string, std::function<int(int)>>& dict) {
-    //return std::accumulate(begin(dict), end(dict), ""s, [](const std::string& accumulated, const std::pair<std::string, std::function<int(int)>>& new_option) {
+//No std::to_string that takes in a std::string and gives back a string! huh! 
+//to_string(const std::string&) is an identity function
+const std::string& to_string(const std::string& s) { return s; }
+
+//Generic function to get options from to_string(first) of the Map
+template<typename Map>
+std::string get_options(const Map& dict) {
     return std::accumulate(begin(dict), end(dict), ""s, [](const std::string& accumulated, const auto& dict_entry) {
-        return accumulated + "/" + dict_entry.first;
+        return accumulated.length()? accumulated + "/" + to_string(dict_entry.first): to_string(dict_entry.first);
     });
 }
 
 int main()
 {
+  std::cout << sizeof(std::function<const std::string(int*)>) << '\n';  //32 on cpp.sh
+  std::cout << sizeof(std::function<int&(float)>) << '\n';  //32 on cpp.sh
+  
   const int num = 5;
   std::string key;
   std::cout << "Enter the function [" << get_options(dict) << "]: ";
