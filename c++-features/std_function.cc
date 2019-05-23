@@ -10,15 +10,15 @@ auto doubler = [](int n) -> int { return n + n; };
 int quadrupler(int n) { return 4 * n; }
 
 std::map<std::string, std::function<int(int)>> dict = {
-    {"Doubler"s, {doubler}},
-    {"Tripler"s, {[](int i) { return i + i + i; }}},
-    {"Quadrupler"s, {quadrupler}},
-    {"5 times"s, {[](int i) { return i * 5; }}},
-    {"6 times multiplier"s, {[](int i) { return i * 6; }}},
-    {"7 fold"s, {[](int i) { return i * 7; }}},
-    {"multiply by 8"s, {[](int i) { return i * 8; }}},
-    {"x 9"s, {[](int i) { return i * 9; }}},
-    {"ten times"s, {[](int i) { return i * 10; }}}
+    {"Doubler"s, doubler},
+    {"Tripler"s, [](int i) { return i + i + i; }},
+    {"Quadrupler"s, quadrupler},
+    {"5 times"s, [](int i) { return i * 5; }},
+    {"6 times multiplier"s, [](int i) { return i * 6; }},
+    {"7 fold"s, [](int i) { return i * 7; }},
+    {"multiply by 8"s, [](int i) { return i * 8; }},
+    {"x 9"s, [](int i) { return i * 9; }},
+    {"ten times"s, [](int i) { return i * 10; }}
 };
 
 //No std::to_string that takes in a std::string and gives back a string! huh! 
