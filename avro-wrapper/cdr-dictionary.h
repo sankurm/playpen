@@ -15,22 +15,25 @@ namespace AVRO
 	using DataGetter = std::function<GenericDatum(const Cdr&)>;
 	using DataGetterMap = std::map<std::string, DataGetter>;
 
-	//DataGetters
+	//Lambda DataGetter
 	auto diameter_app_id_getter = [](const Cdr& cdr) -> GenericDatum {
 		return cdr.type == Diameter? 
 			GenericDatum{cdr.detail.diameter.app_id}:
 			GenericDatum{};
 	};
+	//Function DataGetter
 	GenericDatum isup_caller_no_getter(const Cdr& cdr) {
 		return cdr.type == Isup? 
 			GenericDatum{cdr.detail.isup.caller_no}: 
 			GenericDatum{};
 	}
+	//Higher-level DataGetter for composability
 	auto type_value_getter = [](CdrType type, auto callable_value_getter, const Cdr& cdr) {
 		return cdr.type == type? 
 			GenericDatum{callable_value_getter(cdr)}:
 			GenericDatum{};
 	};
+	//Lower-level DataGetters
 	auto hop_by_hop_id_getter = [](const Cdr& cdr) { return cdr.detail.diameter.hop_by_hop_id; };
 	auto end_to_end_id_getter = [](const Cdr& cdr) { return cdr.detail.diameter.end_to_end_id; };
 	auto request_code_getter = [](const Cdr& cdr) { return cdr.detail.diameter.request_code; };
