@@ -6,8 +6,8 @@
 
 class GenericWriter : avro::GenericWriter
 {
-	using GenericWriter(const ValidSchema& s, const EncoderPtr& encoder);
-	using write(const GenericDatum& datum) const;
+	using avro::GenericWriter(const ValidSchema& s, const EncoderPtr& encoder);
+	using avro::GenericWriter::write(const GenericDatum& datum) const;
 	//Not including static functions here - they can come later, if needed
 	
 	using GenericUnionDatum = std::pair<const avro::GenericUnion&, const avro::GenericDatum&>;
@@ -15,9 +15,8 @@ class GenericWriter : avro::GenericWriter
 };
 
 void GenericWriter::write(const GenericUnionDatum& union_datum) const {
-	if (union_datum.first.isUnion()) {
-		datum.selectBranch(union_datum.first.encodeUnionIndex());
-	}
+	//datum.selectBranch(union_datum.first.encodeUnionIndex());
+	encoder_.encodeUnionIndex(union_datum.first.unionBranch());	//TODO: encoder_ is not accessible here!
 	return write(union_datum.second);
 }
 
