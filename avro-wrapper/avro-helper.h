@@ -7,7 +7,6 @@
 class GenericWriter : avro::GenericWriter
 {
 	using avro::GenericWriter(const ValidSchema& s, const EncoderPtr& encoder);
-	using avro::GenericWriter::write(const GenericDatum& datum) const;
 	//Not including static functions here - they can come later, if needed
 	
 	using GenericUnionDatum = std::pair<const avro::GenericUnion&, const avro::GenericDatum&>;
