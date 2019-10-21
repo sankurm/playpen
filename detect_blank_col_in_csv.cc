@@ -1,3 +1,6 @@
+//Problem Statement: Take in a CSV file (std::cin) and 
+//write out all columns which are empty across all data rows
+//First row needs to be a header
 #include <iostream>
 #include <algorithm>
 #include <string>
