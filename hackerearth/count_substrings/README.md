@@ -1,5 +1,4 @@
-
-#PROBLEM STATEMENT
+# PROBLEM STATEMENT
 
 Points: 10
 
@@ -7,21 +6,21 @@ Given a string S of length N consisting of only lower-case English alphabets, yo
 
 Note : Substrings length should be greater than 1.
 
-##Input
+## Input
 
 The first line of the input will contain N , the length of the string.
 Next line will contain as string of length N. Next line will will contain Q , the number of queries. Then Q subsequent lines will contain two lowercase characters X and Y separated by a space.
 
-##Output
+## Output
 
 For each query , output the answer in a separate line.
 
-##Constraints
+## Constraints
 
 1 <= N <= 10^6
 1 <= Q <= 10^3
 
-##SAMPLE INPUT
+## SAMPLE INPUT
 
 5
 aacbb
@@ -29,12 +28,12 @@ aacbb
 a c
 a b
 
-##SAMPLE OUTPUT
+## SAMPLE OUTPUT
 
 2
 4
 
-##Explanation
+## Explanation
 
 For the first query, the possible substrings are aac and ac. Hence the answer is 2.
 For the second query, the possible substrings are aacbb, aacb, acbb, and acb, hence making a total of 4 substrings.
