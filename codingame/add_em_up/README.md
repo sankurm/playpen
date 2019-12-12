@@ -32,3 +32,10 @@ Insert 1 and 5 to get a new card of 6 points. Cost $6.
 Total cost is err... $11?!
 
 Being a smart player you should find the best strategy to finish the trade-in with the lowest cost. 
+
+## Input
+First line has the number of elements 
+Second line has all the elements 
+
+## Output
+Output the least cost debited from the account. 
