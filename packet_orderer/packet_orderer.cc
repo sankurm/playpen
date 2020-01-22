@@ -41,11 +41,19 @@ void send_packet(const packet& p) {
 	std::cout << p.time_ns << ", ";
 }
 
+template<typename RandomIt, typename UnaryPredicate, typename Compare>
+RandomIt partition_sort(RandomIt first, RandomIt last, UnaryPredicate pred, Compare comp) {
+	auto partition_point = std::partition(first, last, pred);
+	std::sort(first, partition_point, comp);
+	return partition_point;
+}
+
 auto gather_packets(std::vector<packet>& vec, uint64_t send_time) {
 	auto packets_to_send = [send_time](const packet& p) { return p.time_ns < send_time; };
     
-	auto partition_point = std::partition(begin(vec), end(vec), packets_to_send);
-	std::sort(begin(vec), partition_point, time_less_than);
+	//auto partition_point = std::partition(begin(vec), end(vec), packets_to_send);
+	//std::sort(begin(vec), partition_point, time_less_than);
+	auto partition_point = partition_sort(begin(vec), end(vec), packets_to_send, time_less_than);
     
 	return partition_point;
 }
