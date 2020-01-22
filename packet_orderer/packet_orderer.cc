@@ -42,31 +42,30 @@ void send_packet(const packet& p) {
 }
 
 template<typename RandomIt, typename UnaryPredicate, typename Compare>
-RandomIt partition_sort(RandomIt first, RandomIt last, UnaryPredicate pred, Compare comp) {
+RandomIt partition_sort_2ndpart(RandomIt first, RandomIt last, UnaryPredicate pred, Compare comp) {
 	auto partition_point = std::partition(first, last, pred);
-	std::sort(first, partition_point, comp);
+	std::sort(partition_point, last, comp);
 	return partition_point;
 }
 
 auto gather_packets(std::vector<packet>& vec, uint64_t send_time) {
-	auto packets_to_send = [send_time](const packet& p) { return p.time_ns < send_time; };
+	auto packets_not_ready = [send_time](const packet& p) { return p.time_ns > send_time; };
     
-	//auto partition_point = std::partition(begin(vec), end(vec), packets_to_send);
-	//std::sort(begin(vec), partition_point, time_less_than);
-	auto partition_point = partition_sort(begin(vec), end(vec), packets_to_send, time_less_than);
+	auto part_point = partition_sort_2ndpart(begin(vec), end(vec), 
+		packets_not_ready, time_less_than);
     
-	return partition_point;
+	return part_point;
 }
 
 void send(std::vector<packet>& vec, uint64_t send_time) {
-	auto partition_point = gather_packets(vec, send_time);
+	auto part_point = gather_packets(vec, send_time);
 
-	std::cout << "Sending " << std::distance(begin(vec), partition_point) << 
+	std::cout << "Sending " << std::distance(part_point, end(vec)) << 
 		" packets for time " << send_time << '\n';
-	std::for_each(begin(vec), partition_point, send_packet);
+	std::for_each(part_point, end(vec), send_packet);
 	std::cout << '\n';
     
-	vec.erase(begin(vec), partition_point);
+	vec.erase(part_point, end(vec));
 	std::cout << "After send, " << vec;
 }
 
