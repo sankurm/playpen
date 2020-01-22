@@ -41,7 +41,7 @@ void send_packet(const packet& p) {
 	std::cout << p.time_ns << ", ";
 }
 
-auto get_partition_point(std::vector<packet>& vec, uint64_t send_time) {
+auto gather_packets(std::vector<packet>& vec, uint64_t send_time) {
 	auto packets_to_send = [send_time](const packet& p) { return p.time_ns < send_time; };
     
 	auto partition_point = std::partition(begin(vec), end(vec), packets_to_send);
@@ -51,7 +51,7 @@ auto get_partition_point(std::vector<packet>& vec, uint64_t send_time) {
 }
 
 void send(std::vector<packet>& vec, uint64_t send_time) {
-	auto partition_point = get_partition_point(vec, send_time);
+	auto partition_point = gather_packets(vec, send_time);
 
 	std::cout << "Sending " << std::distance(begin(vec), partition_point) << 
 		" packets for time " << send_time << '\n';
