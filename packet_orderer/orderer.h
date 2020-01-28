@@ -6,35 +6,37 @@
 #include <cstdint>
 //#include <iostream>
 
-template<typename T, uint64_t latency_duration = 100>
+template<typename T, typename Criterion>
 class Orderer
 {
 	public:
-	using GetTime = std::function<uint64_t(const T&)>;
+	using Get_criterion = std::function<Criterion(const T&)>;
 
-	Orderer() = default;
-	template<typename Get_time_F>
-	Orderer(const Get_time_F& getter) : get_time(getter) {
+	//Orderer() = default;
+	template<typename Get_criterion_F>
+	//std::enable_if_t<std::is_same_v<std::invoke_result<Get_Criterion_F>::type, Criterion>, int> = 0
+	Orderer(const Get_criterion_F& get_crit, Criterion crit_lag) : get_criterion(get_crit), lag(crit_lag) {
 	}
 	void insert(const T& t) {
 		cont.push_back(t);
 	}
 
 	template<typename Callable>
-	int invoke_for_ready(uint64_t now, Callable&& call);
+	int invoke_for_ready(Criterion crit, Callable&& call);
 
 	private:
 	std::vector<T> cont;
-	GetTime get_time = [](const T& t) { return t.time_ns; };
+	Get_criterion get_criterion;// = [](const T& t) { return t.time_ns; };
+	Criterion lag;
 
-	auto gether_ready(const uint64_t send_time);
+	auto gether_qualifying(const Criterion invoke_crit);
 };
 
-template<typename T, uint64_t latency_duration>
+template<typename T, typename Criterion>
 template<typename Callable>
-int Orderer<T, latency_duration>::invoke_for_ready(uint64_t now, Callable&& call) {
-	uint64_t send_time = now - latency_duration;
-	auto [part_begin, part_end] = gether_ready(send_time);
+int Orderer<T, Criterion>::invoke_for_ready(Criterion crit, Callable&& call) {
+	Criterion invoke_crit = crit - lag;
+	auto [part_begin, part_end] = gether_qualifying(invoke_crit);
 
 	const int no_entries = std::distance(part_begin, part_end);
 	//std::cout << "Invoking for " << std::distance(part_begin, part_end) << 
@@ -50,12 +52,12 @@ int Orderer<T, latency_duration>::invoke_for_ready(uint64_t now, Callable&& call
 	return no_entries;
 }
 
-template<typename T, uint64_t latency_duration>
-auto Orderer<T, latency_duration>::gether_ready(const uint64_t send_time) {
-	auto is_not_ready = [send_time, &gt = get_time](const T& t) { return gt(t) > send_time; };
-	auto time_less = [&gt = get_time](const T& t1, const T& t2) { return gt(t1) < gt(t2); };
+template<typename T, typename Criterion>
+auto Orderer<T, Criterion>::gether_qualifying(const Criterion invoke_crit) {
+	auto does_not_qualify = [invoke_crit, &gc = get_criterion](const T& t) { return gc(t) > invoke_crit; };
+	auto crit_less = [&gc = get_criterion](const T& t1, const T& t2) { return gc(t1) < gc(t2); };
 	
-	auto part_point = partition_sort_2ndpart(begin(cont), end(cont), is_not_ready, time_less);
+	auto part_point = partition_sort_2ndpart(begin(cont), end(cont), does_not_qualify, crit_less);
 	
 	return std::make_pair(part_point, end(cont));
 }
