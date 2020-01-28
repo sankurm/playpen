@@ -21,7 +21,7 @@ class Orderer
 	}
 
 	template<typename Callable>
-	void invoke_for_ready(uint64_t now, Callable&& call);
+	int invoke_for_ready(uint64_t now, Callable&& call);
 
 	private:
 	std::vector<T> cont;
@@ -32,10 +32,11 @@ class Orderer
 
 template<typename T, uint64_t latency_duration>
 template<typename Callable>
-void Orderer<T, latency_duration>::invoke_for_ready(uint64_t now, Callable&& call) {
+int Orderer<T, latency_duration>::invoke_for_ready(uint64_t now, Callable&& call) {
 	uint64_t send_time = now - latency_duration;
 	auto [part_begin, part_end] = gether_ready(send_time);
 
+	const int no_entries = std::distance(part_begin, part_end);
 	//std::cout << "Invoking for " << std::distance(part_begin, part_end) << 
 		//" at time " << send_time << '\n';
 	std::for_each(part_begin, part_end, [&call](const auto& t) {
@@ -46,6 +47,7 @@ void Orderer<T, latency_duration>::invoke_for_ready(uint64_t now, Callable&& cal
 	
 	cont.erase(part_begin, part_end);
 	//std::cout << "After send, " << cont;
+	return no_entries;
 }
 
 template<typename T, uint64_t latency_duration>
