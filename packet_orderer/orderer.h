@@ -1,9 +1,10 @@
+#include <partition_sort_2ndpart.h>
 #include <vector>
 #include <algorithm>
 #include <utility>
 #include <functional>
 #include <cstdint>
-#include <iostream>
+//#include <iostream>
 
 template<typename T, uint64_t latency_duration = 100>
 class Orderer
@@ -35,16 +36,16 @@ void Orderer<T, latency_duration>::invoke_for_ready(uint64_t now, Callable&& cal
 	uint64_t send_time = now - latency_duration;
 	auto [part_begin, part_end] = gether_ready(send_time);
 
-	std::cout << "Invoking for " << std::distance(part_begin, part_end) << 
-		" at time " << send_time << '\n';
+	//std::cout << "Invoking for " << std::distance(part_begin, part_end) << 
+		//" at time " << send_time << '\n';
 	std::for_each(part_begin, part_end, [&call](const auto& t) {
 			std::invoke(std::forward<Callable>(call), t);
 		}
 	);
-	std::cout << '\n';
+	//std::cout << '\n';
 	
 	cont.erase(part_begin, part_end);
-	std::cout << "After send, " << cont;
+	//std::cout << "After send, " << cont;
 }
 
 template<typename T, uint64_t latency_duration>
