@@ -45,19 +45,25 @@ std::vector<packet> generate_n_packets(const uint64_t now, const int n) {
 	return new_packs;
 }
 
+auto get_time_ns = [](const auto& t) { return t.time_ns; };
+
 int main(int argc, char** argv) {
-	Orderer<packet> ord;
+	Orderer<packet, uint64_t> orderer(get_time_ns, 100);
 
 	for (uint64_t now = 0; now < 10'000; now += 1000) {
 		int n = rand_count(generator);
 
 		auto new_packs = generate_n_packets(now, n);
 		for (const auto& p : new_packs) {
-			ord.insert(p);
+			orderer.insert(p);
 		}
+		std::cout << "Orderer now has: " << orderer.get_cont();
 
 		uint64_t send_time = now + rand_ns(generator);
-		ord.invoke_for_ready(send_time, send_packet);
+		std::cout << "Sending packets at " << send_time << ": ";
+		auto count = orderer.invoke_for_ready(send_time, send_packet);
+		std::cout << "\nSent packets: " << count << '\n';
+		std::cout << "Orderer now left with: " << orderer.get_cont();
 
 		std::this_thread::sleep_for(2s);
 		std::cout << '\n';
