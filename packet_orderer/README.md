@@ -30,8 +30,8 @@ Add a new `T` to the `Orderer` internal container
 
 `invoke_on_ready`
 
-threshold - threshold value of the criterion to assess which `T`s are ready
+`threshold` - threshold value of the criterion to assess which `T`s are ready
 
-call - a Callable that will be invoked for all ready `T`s
+`call` - a Callable that will be invoked for all ready `T`s
 
 Return - count of items processed
