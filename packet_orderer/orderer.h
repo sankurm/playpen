@@ -24,6 +24,10 @@ class Orderer
 	template<typename Callable>
 	int invoke_for_ready(Criterion crit, Callable&& call);
 
+	const auto& get_cont() const {
+		return cont;
+	}
+	
 	private:
 	std::vector<T> cont;
 	Get_criterion get_criterion;// = [](const T& t) { return t.time_ns; };
