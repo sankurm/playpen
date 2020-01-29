@@ -4,7 +4,6 @@
 #include <utility>
 #include <functional>
 #include <cstdint>
-//#include <iostream>
 
 template<typename T, typename Criterion>
 class Orderer
@@ -43,16 +42,13 @@ int Orderer<T, Criterion>::invoke_for_ready(Criterion crit, Callable&& call) {
 	auto [part_begin, part_end] = gether_qualifying(invoke_crit);
 
 	const int no_entries = std::distance(part_begin, part_end);
-	//std::cout << "Invoking for " << std::distance(part_begin, part_end) << 
-		//" at time " << send_time << '\n';
+	
 	std::for_each(part_begin, part_end, [&call](const auto& t) {
 			std::invoke(std::forward<Callable>(call), t);
 		}
 	);
-	//std::cout << '\n';
 	
 	cont.erase(part_begin, part_end);
-	//std::cout << "After send, " << cont;
 	return no_entries;
 }
 
