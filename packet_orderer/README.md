@@ -18,8 +18,8 @@ The implementation is C++17 compatible.
 
 Test execution can be done with the following command: 
 ```bash
-$ CC -std=c++17 -I../ test.cc -o test
-$ ./test
+$ CC -std=c++17 -I../ random_rx_tx.cc -o random_rx_tx
+$ ./random_rx_tx
 ```
 
 ## API
