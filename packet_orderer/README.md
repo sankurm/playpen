@@ -12,6 +12,16 @@ The solution is to have an unsorted `std::vector`! :stuck_out_tongue:
 The `Orderer` just puts new packets at the end and does not order them until needed. 
 The user can ask for a consuming function to be executed on all the 'ready' packets. The packets will be ordered only when the user asks it to using the `invoke_on_ready` function. 
 
+## Compilation
+This is header a only implementation. 
+The implementation is C++17 compatible. 
+
+Test execution can be done with the following command: 
+```bash
+$ CC -std=c++17 -I../ test.cc -o test
+$ ./test
+```
+
 ## API
 The public interface: 
 
