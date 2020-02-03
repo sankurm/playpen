@@ -22,6 +22,8 @@ $ CC -std=c++17 -I../ random_rx_tx.cc -o random_rx_tx
 $ ./random_rx_tx
 ```
 
+The tests have been proven to work on 9.2.0 on CentOS 7 and also on www.onlinegdb.com. 
+
 ## API
 The public interface: 
 
