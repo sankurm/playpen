@@ -37,10 +37,15 @@ Template Parameters:
 
 `Criterion_type` - data-type of the ordering & qualifying criterion 
 
-`insert`
+### Constructor (Orderer)
+Takes any invocable `F` (is a function that) gets the criterion from the `T`. 
+And, a `lag` value that should be offset to consider the `T` for processing
+
+
+### `insert`
 Add a new `T` to the `Orderer` internal container
 
-`invoke_on_ready`
+### `invoke_on_ready`
 
 `threshold` - threshold value of the criterion to assess which `T`s are ready
 
