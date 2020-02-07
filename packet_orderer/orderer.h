@@ -32,14 +32,14 @@ class Orderer
 	Get_criterion get_criterion;// = [](const T& t) { return t.time_ns; };
 	Criterion lag;
 
-	auto gether_qualifying(const Criterion invoke_crit);
+	auto gather_qualifying(const Criterion invoke_crit);
 };
 
 template<typename T, typename Criterion>
 template<typename Callable>
 int Orderer<T, Criterion>::invoke_for_ready(Criterion crit, Callable&& call) {
 	Criterion invoke_crit = crit - lag;
-	auto [part_begin, part_end] = gether_qualifying(invoke_crit);
+	auto [part_begin, part_end] = gather_qualifying(invoke_crit);
 
 	const int no_entries = std::distance(part_begin, part_end);
 	
@@ -53,7 +53,7 @@ int Orderer<T, Criterion>::invoke_for_ready(Criterion crit, Callable&& call) {
 }
 
 template<typename T, typename Criterion>
-auto Orderer<T, Criterion>::gether_qualifying(const Criterion invoke_crit) {
+auto Orderer<T, Criterion>::gather_qualifying(const Criterion invoke_crit) {
 	auto does_not_qualify = [invoke_crit, &gc = get_criterion](const T& t) { return gc(t) > invoke_crit; };
 	auto crit_less = [&gc = get_criterion](const T& t1, const T& t2) { return gc(t1) < gc(t2); };
 	
