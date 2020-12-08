@@ -10,7 +10,7 @@ Core implementation around capture service with multiple disparate consumers
 
 # thoughts
 1. Gcc Plugin
-1. Protocol parser
+1. Protocol parser - use Hana's CTRE or boost lexy by foonathan? 
 1. Template error helper
 1. concept 
 1. module
