@@ -1,4 +1,4 @@
-//https://godbolt.org/z/xMs61rxGx
+//https://godbolt.org/z/44zve7sqE
 #include <concepts>
 #include <optional>
 #include <functional>
@@ -14,7 +14,7 @@ std::optional<image> add_rainbow(const image& img) { return image{img.i + 1}; }
 
 //operator| instead of std::invoke at the start of a chain
 template<typename T, typename Callable>
-requires std::invocable<Callable, const T&> || std::invocable<Callable, T&>
+requires std::invocable<Callable, const T&> || std::invocable<Callable, T&> || std::invocable<Callable, T&&>
 auto operator|(T&& t, Callable&& fn) {
     return std::invoke(std::forward<Callable>(fn), std::forward<T>(t));
 }
