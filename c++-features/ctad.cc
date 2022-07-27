@@ -1,3 +1,4 @@
+//COMPILATION: g++ -std=c++17 ctad.cc
 #include <iostream>
 #include <memory>
 #include <algorithm>
