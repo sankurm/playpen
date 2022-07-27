@@ -45,6 +45,5 @@ int main() {
     S s1{};
     ankur::vector lvec{1, 2.3, true, 'A', "use deduction guide", s1};
     print(lvec);
-    
-    return 0;
+    return lvec.size();
 }
