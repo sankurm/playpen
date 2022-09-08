@@ -1,3 +1,4 @@
+//$ g++ -std=c++20 -O3 -Werror -Wall -Wpedantic power_of_2.cpp -o power_of_2
 #include <bitset>
 #include <bit>
 #include <concepts>
@@ -23,7 +24,7 @@ constexpr bool is_pow2_knr(std::unsigned_integral auto n) {
 
 constexpr bool is_pow2_bitset(std::unsigned_integral auto n) {
     std::bitset<sizeof(decltype(n))> bs(n);
-    return bs.count() == 1;
+    return bs.count() == 1;   //NOT constexpr! :(
 }
 
 constexpr bool is_pow2_popcount(std::unsigned_integral auto n) {
@@ -37,7 +38,7 @@ constexpr bool is_pow2_has_single_bit(std::unsigned_integral auto n) {
 static_assert(is_pow2_bit_counting_loop(2u));
 static_assert(is_pow2_match_with_powers(4u));
 static_assert(is_pow2_knr(8u));
-//static_assert(is_pow2_bitset(16u));
+//static_assert(is_pow2_bitset(16u));   //bitset::count() isn't constexpr
 static_assert(is_pow2_popcount(32u));
 static_assert(is_pow2_has_single_bit(64u));
     
