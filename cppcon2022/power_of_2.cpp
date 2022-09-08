@@ -35,6 +35,14 @@ constexpr bool is_pow2_has_single_bit(std::unsigned_integral auto n) {
     return std::has_single_bit(n);
 }
 
+//Template Meta-Programming? Use constexpr instead
+template<std::unsigned_integral uint, uint N>
+struct pow2
+{ uint value = (N == 0? uint(1): pow2<uint, N - 1>::value * uint(2)); };
+template<std::unsigned_integral uint>
+struct is_pow2
+{ bool value = false; };
+
 static_assert(is_pow2_bit_counting_loop(2u));
 static_assert(is_pow2_match_with_powers(4u));
 static_assert(is_pow2_knr(8u));
