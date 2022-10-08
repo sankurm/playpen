@@ -48,4 +48,6 @@ int main(int, char**) {
             {"Andrei Alexadrescu", 1.80, 5600},
         });
     std::cout<< "\nTable 5:\n" << tbl5 << '\n';
+    tbl5.insert("Ankur Satle", 1.75, 0);
+    std::cout<< "\nTable 5:\n" << tbl5 << '\n';
 }
