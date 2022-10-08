@@ -42,7 +42,7 @@ void table<Ts...>::insert(Ts... ts) {
 
 template<typename... Ts>
 void table<Ts...>::println(const int index, std::ostream& out) {
-    out << data[index];
+    out << "At index " << index << ": " << data[index];
 }
 
 template<typename... Ts>
