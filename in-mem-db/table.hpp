@@ -103,6 +103,23 @@ namespace db
     [[nodiscard]] const auto& table<Ts...>::get_column_names() const { return column_names; }
 
     template<typename... Ts>
+    std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
+        std::apply([&out](const Ts&... elems){
+            ((out << " | " << elems), ...);
+            out << " |";
+        }, tup);
+        return out;
+    }
+
+    template<typename T>
+    std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+        for (const auto& elem : v) {
+            out << elem << "\n";
+        }
+        return out;
+    }
+
+    template<typename... Ts>
     std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
         if (const auto& cols = tbl.get_column_names(); !cols.empty()) {
             out << " | ";
@@ -114,23 +131,6 @@ namespace db
         }
         return out << tbl.get_data();
     }
-}
-
-template<typename... Ts>
-std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
-    std::apply([&out](const Ts&... elems){
-        ((out << " | " << elems), ...);
-        out << " |";
-    }, tup);
-    return out;
-}
-
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
-    for (const auto& elem : v) {
-        out << elem << "\n";
-    }
-    return out;
 }
 
 #endif
