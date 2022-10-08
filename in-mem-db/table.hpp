@@ -36,8 +36,7 @@ table<Ts...>::table(std::initializer_list<std::string> column_names)
 }
 template<typename... Ts>
 void table<Ts...>::insert(Ts... ts) {
-    //data.push_back(std::make_tuple<Ts...>(std::forward<Ts>(ts)...));
-    data.emplace_back(ts...);
+    data.emplace_back(std::forward<Ts>(ts)...);
 }
 
 template<typename... Ts>
