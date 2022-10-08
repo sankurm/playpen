@@ -15,9 +15,10 @@ class table
 
         void insert(Ts... ts);
 
-        void println(const int rowID = 0);
+        void println(const int index = 0, std::ostream& out = std::cout);
 
         const auto& get_data() const { return data; }
+        const auto& get_column_names() const { return column_names; }
     private:
         std::vector<std::string> column_names;
         std::vector<std::tuple<Ts...>> data;
@@ -32,8 +33,8 @@ void table<Ts...>::insert(Ts... ts) {
 }
 
 template<typename... Ts>
-void table<Ts...>::println(const int index) {
-    std::cout << data[index] << '\n';
+void table<Ts...>::println(const int index, std::ostream& out) {
+    out << data[index];
 }
 
 template<typename... Ts>
@@ -42,7 +43,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
         out << '{';
         std::size_t n{0};
         ((out << elems << (++n != sizeof...(Ts)? ", ": "")), ...);
-        out << '}';
+        out << "}\n";
     }, tup);
     return out;
     //for (int i = 0; i < std::tuple_size_v(tup); ++i) {
@@ -54,14 +55,14 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
 template<typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
     for (const auto& elem : v) {
-        out << elem << '\n';
+        out << elem << ' ';
     }
     return out;
 }
 
 template<typename... Ts>
 std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
-    return out << tbl.get_data();
+    return out << tbl.get_column_names() << '\n' << tbl.get_data();
 }
 
 

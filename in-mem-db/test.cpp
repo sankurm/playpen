@@ -4,7 +4,7 @@ int main(int, char**) {
     // types of data type : Bool, integer, string and float
     // can be in any order
 
-    table<int, const char*, bool> tbl1;
+    table<int, const char*, bool> tbl1({"Id", "Name", "IsIndividual"});
     // optional
     // tbl1.insertHeader("number", "Name", "visited");
     tbl1.insert(1, "Mr.K", true);
@@ -15,7 +15,7 @@ int main(int, char**) {
     // optional to print all the data inside object
     std::cout<< tbl1 ;
 
-    table<const char*, int, double> tbl2;
+    table<const char*, int, double> tbl2({"Name", "Id", "Amount"});
     // optional
     // tbl2.insertHeader( "Name", "ID", amount );
     tbl2.insert("Mr.K", 2157, 234.56);
