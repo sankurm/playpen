@@ -4,6 +4,8 @@
 #include <vector>
 #include <tuple>
 #include <numeric>
+#include <algorithm>
+#include <iterator>
 #include <string>
 #include <iostream>
 
@@ -53,28 +55,22 @@ void table<Ts...>::insert(Ts... ts) {
 
 template<typename... Ts>
 void table<Ts...>::println(const int index, std::ostream& out) {
-    out << "At index " << index << ": " << data[index];
+    out << "At index " << index << ": " << data[index] << '\n';
 }
 
 template<typename... Ts>
 std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
     std::apply([&out](const Ts&... elems){
-        out << '{';
-        std::size_t n{0};
-        ((out << elems << (++n != sizeof...(Ts)? ", ": "")), ...);
-        out << "}\n";
+        ((out << " | " << elems), ...);
+        out << " |";
     }, tup);
     return out;
-    //for (int i = 0; i < std::tuple_size_v(tup); ++i) {
-        //out << std::get<i>(tup) << ", ";
-    //}
-    //return out << ... << tup;
 }
 
 template<typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
     for (const auto& elem : v) {
-        out << elem << ' ';
+        out << elem << "\n";
     }
     return out;
 }
@@ -82,9 +78,12 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 template<typename... Ts>
 std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
     if (const auto& cols = tbl.get_column_names(); !cols.empty()) {
-        out << ' ' << tbl.get_column_names() << '\n';
-        std::size_t no_chars = std::accumulate(begin(cols), end(cols), 0z, [](int sum, const std::string& col) { return sum += col.length(); });
-        out << ' ' << std::string(no_chars + cols.size() - 1, '=') << "\n ";
+        out << " | ";
+        //std::copy(begin(cols), end(cols), std::ostream_iterator<std::string>(out, " | "));
+        std::ranges::copy(cols, std::ostream_iterator<std::string>(out, " | "));
+        std::size_t no_chars = std::accumulate(begin(cols), end(cols), 0z,
+            [](int sum, const std::string& col) { return sum += col.length(); });
+        out << "\n " << std::string(no_chars + 3 * cols.size() + 1, '=') << "\n";
     }
     return out << tbl.get_data();
 }

@@ -21,7 +21,7 @@ int main(int, char**) {
     tbl2.println(1);  // Scott Meyers 86436 6899.99
 
     // print all the data inside object
-    std::cout<< "\nTable 2:\n " << tbl2 << '\n';
+    std::cout<< "\nTable 2:\n" << tbl2 << '\n';
 
     try {
         table<const char*, int, double> tbl3({"Name", "Id", "Amount", "Extra", "More Extra"});
