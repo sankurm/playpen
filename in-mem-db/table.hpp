@@ -7,7 +7,8 @@
 #include <iostream>
 
 template <typename... Ts>
-class table {
+class table
+{
     public:
         table() = default;
         table(std::initializer_list<std::string> column_names) : column_names(column_names) {}
@@ -15,9 +16,13 @@ class table {
         void insert(Ts... ts);
 
         void println(const int rowID = 0);
+
+        const auto& get_data() const { return data; }
     private:
         std::vector<std::string> column_names;
         std::vector<std::tuple<Ts...>> data;
+
+        //friend std::ostream& operator<<(std::ostream& out, const table<>&);
 };
 
 template<typename... Ts>
@@ -46,11 +51,18 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
     //return out << ... << tup;
 }
 
-// optional
-// std::ostream &operator<<(std::ostream &out, const kDB &ob)
-//{
-//	return out;
-// }
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+    for (const auto& elem : v) {
+        out << elem << '\n';
+    }
+    return out;
+}
+
+template<typename... Ts>
+std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
+    return out << tbl.get_data();
+}
 
 
 #endif

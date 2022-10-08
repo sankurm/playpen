@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     db1.println();   // should println 1 Mr.K 1
     db1.println(2);  // bjarne
     // optional to print all the data inside object
-    // std::cout<< db1 ;
+    std::cout<< db1 ;
 
     table<const char*, int, double> db2;
     // optional
@@ -25,5 +25,5 @@ int main(int argc, char** argv) {
     db2.println(1);  // Scott Meyers 86436 6899.99
 
     // optional to print all the data inside object
-    // std::cout<< db2 ;
+    std::cout<< db2 ;
 }
