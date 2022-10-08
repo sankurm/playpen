@@ -13,7 +13,7 @@ int main(int, char**) {
     tbl1.println();   // should println 1 Mr.K 1
     tbl1.println(2);  // bjarne
     // optional to print all the data inside object
-    std::cout<< tbl1 << '\n';
+    std::cout<< "\nTable 1:\n" << tbl1 << '\n';
 
     table<const char*, int, double> tbl2({"Name", "Id", "Amount"});
     // optional
@@ -25,7 +25,7 @@ int main(int, char**) {
     tbl2.println(1);  // Scott Meyers 86436 6899.99
 
     // optional to print all the data inside object
-    std::cout<< tbl2 << '\n';
+    std::cout<< "\nTable 2:\n" << tbl2 << '\n';
 
     try {
         table<const char*, int, double> tbl3({"Name", "Id", "Amount", "Extra", "More Extra"});
