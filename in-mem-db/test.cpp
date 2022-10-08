@@ -25,7 +25,7 @@ int main(int, char**) {
     tbl2.println(1);  // Scott Meyers 86436 6899.99
 
     // optional to print all the data inside object
-    std::cout<< "\nTable 2:\n" << tbl2 << '\n';
+    std::cout<< "\nTable 2:\n " << tbl2 << '\n';
 
     try {
         table<const char*, int, double> tbl3({"Name", "Id", "Amount", "Extra", "More Extra"});
@@ -38,4 +38,14 @@ int main(int, char**) {
     } catch(const std::invalid_argument& e) {
         std::cout << "std::invalid_argument exception for tbl4: " << e.what() << '\n';
     }
+
+    table<const char*, double, long> tbl5(
+        {"Name", "Height", "Distance"}, 
+        {
+            {"Bjarne Stroustrup", 1.88, 6600},
+            {"Herb Sutter", 1.75, 6200},
+            {"Richard Smith", 1.90, 7000},
+            {"Andrei Alexadrescu", 1.80, 5600},
+        });
+    std::cout<< "\nTable 5:\n" << tbl5 << '\n';
 }

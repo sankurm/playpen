@@ -13,6 +13,7 @@ class table
     public:
         table() = default;
         table(std::initializer_list<std::string> column_names);
+        table(std::initializer_list<std::string> column_names, std::initializer_list<std::tuple<Ts...>> data);
 
         void insert(Ts... ts);
 
@@ -35,6 +36,16 @@ table<Ts...>::table(std::initializer_list<std::string> column_names)
             + ") does not match the no. of columns (" + std::to_string(sizeof...(Ts)) + ")");
     }
 }
+
+template<typename... Ts>
+table<Ts...>::table(std::initializer_list<std::string> column_names, std::initializer_list<std::tuple<Ts...>> data)
+        : column_names(column_names), data(data) {
+    if (column_names.size() != sizeof...(Ts)) {
+        throw std::invalid_argument(std::string{"No. of column_names ("} + std::to_string(column_names.size())
+            + ") does not match the no. of columns (" + std::to_string(sizeof...(Ts)) + ")");
+    }
+}
+
 template<typename... Ts>
 void table<Ts...>::insert(Ts... ts) {
     data.emplace_back(std::forward<Ts>(ts)...);
@@ -71,9 +82,9 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 template<typename... Ts>
 std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
     if (const auto& cols = tbl.get_column_names(); !cols.empty()) {
-        out << tbl.get_column_names() << '\n';
+        out << ' ' << tbl.get_column_names() << '\n';
         std::size_t no_chars = std::accumulate(begin(cols), end(cols), 0z, [](int sum, const std::string& col) { return sum += col.length(); });
-        out << std::string(no_chars + cols.size() - 1, '=') << '\n';
+        out << ' ' << std::string(no_chars + cols.size() - 1, '=') << "\n ";
     }
     return out << tbl.get_data();
 }
