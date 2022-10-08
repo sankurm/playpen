@@ -14,6 +14,10 @@ int main(int, char**) {
     std::cout<< "\nTable 1:\n" << tbl1 << '\n';
 
     db::table<std::string, int, double> tbl2;
+
+    //Print empty table
+    std::cout<< "\nTable 2:\n" << tbl2 << '\n';
+
     tbl2.insert("Mr.K", 2157, 234.56);
     tbl2.insert("Scott Meyers", 86436, 6899.99);
     tbl2.insert("Sean Parent", 98765, 4678.78);
