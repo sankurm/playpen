@@ -3,7 +3,7 @@
 int main(int, char**) {
     // types of data type in any order: Bool, integer, string and float
 
-    db::table<int, const char*, bool> tbl1({"Id", "Name", "IsIndividual"});
+    db::table<int, std::string, bool> tbl1({"Id", "Name", "IsIndividual"});
     tbl1.insert(1, "Mr.K", true);
     tbl1.insert(2, "CppIndia", false);
     tbl1.insert(5, "Bjarne", true);
@@ -13,7 +13,7 @@ int main(int, char**) {
     // print all the data inside object
     std::cout<< "\nTable 1:\n" << tbl1 << '\n';
 
-    db::table<const char*, int, double> tbl2;
+    db::table<std::string, int, double> tbl2;
     tbl2.insert("Mr.K", 2157, 234.56);
     tbl2.insert("Scott Meyers", 86436, 6899.99);
     tbl2.insert("Sean Parent", 98765, 4678.78);
@@ -24,18 +24,21 @@ int main(int, char**) {
     std::cout<< "\nTable 2:\n" << tbl2 << '\n';
 
     try {
-        db::table<const char*, int, double> tbl3({"Name", "Id", "Amount", "Extra", "More Extra"});
+        db::table<const char*, int, double> tbl3({"Name", "Id", "Amount", "Inexistent col name", "More inexistent"});
     } catch(const std::invalid_argument& e) {
         std::cout << "std::invalid_argument exception for tbl3: " << e.what() << '\n';
     }
 
     try {
-        db::table<const char*, int, double> tbl4({"Name", "Id"});
+        db::table<std::string, int, double> tbl4({"Name", "Pin code"/*, "Populate in lacs"*/}, {
+            {"Mumbai", 400001, 120.1},
+            {"Chennai", 600001, 80.5}
+        });
     } catch(const std::invalid_argument& e) {
         std::cout << "std::invalid_argument exception for tbl4: " << e.what() << '\n';
     }
 
-    db::table<const char*, double, long> tbl5(
+    db::table<std::string, double, long> tbl5(
         {"Name", "Height", "Distance"}, 
         {
             {"Bjarne Stroustrup", 1.88, 6600},
