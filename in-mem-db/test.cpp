@@ -30,6 +30,12 @@ int main(int, char**) {
     try {
         table<const char*, int, double> tbl3({"Name", "Id", "Amount", "Extra", "More Extra"});
     } catch(const std::invalid_argument& e) {
-        std::cout << "std::invalid_argument exception: " << e.what() << '\n';
+        std::cout << "std::invalid_argument exception for tbl3: " << e.what() << '\n';
+    }
+
+    try {
+        table<const char*, int, double> tbl4({"Name", "Id"});
+    } catch(const std::invalid_argument& e) {
+        std::cout << "std::invalid_argument exception for tbl4: " << e.what() << '\n';
     }
 }
