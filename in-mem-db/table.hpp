@@ -8,7 +8,7 @@
 #include <iostream>
 
 template <typename... Ts>
-class table
+class [[nodiscard]] table
 {
     public:
         table() = default;
@@ -19,8 +19,8 @@ class table
 
         void println(const int index = 0, std::ostream& out = std::cout);
 
-        const auto& get_data() const { return data; }
-        const auto& get_column_names() const { return column_names; }
+        [[nodiscard]] const auto& get_data() const { return data; }
+        [[nodiscard]] const auto& get_column_names() const { return column_names; }
     private:
         std::vector<std::string> column_names;
         std::vector<std::tuple<Ts...>> data;
