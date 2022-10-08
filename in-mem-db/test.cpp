@@ -1,6 +1,6 @@
 #include "table.hpp"
 
-int main(int argc, char** argv) {
+int main(int, char**) {
     // types of data type : Bool, integer, string and float
     // can be in any order
 
