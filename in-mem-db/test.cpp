@@ -13,7 +13,7 @@ int main(int, char**) {
     tbl1.println();   // should println 1 Mr.K 1
     tbl1.println(2);  // bjarne
     // optional to print all the data inside object
-    std::cout<< tbl1 ;
+    std::cout<< tbl1 << '\n';
 
     table<const char*, int, double> tbl2({"Name", "Id", "Amount"});
     // optional
@@ -25,5 +25,11 @@ int main(int, char**) {
     tbl2.println(1);  // Scott Meyers 86436 6899.99
 
     // optional to print all the data inside object
-    std::cout<< tbl2 ;
+    std::cout<< tbl2 << '\n';
+
+    try {
+        table<const char*, int, double> tbl3({"Name", "Id", "Amount", "Extra", "More Extra"});
+    } catch(const std::invalid_argument& e) {
+        std::cout << "std::invalid_argument exception: " << e.what() << '\n';
+    }
 }
