@@ -21,8 +21,8 @@ class [[nodiscard]] table
 
         void println(const int index = 0, std::ostream& out = std::cout);
 
-        [[nodiscard]] const auto& get_data() const { return data; }
-        [[nodiscard]] const auto& get_column_names() const { return column_names; }
+        const auto& get_data() const;
+        const auto& get_column_names() const;
     private:
         std::vector<std::string> column_names;
         std::vector<std::tuple<Ts...>> data;
@@ -30,6 +30,13 @@ class [[nodiscard]] table
         //friend std::ostream& operator<<(std::ostream& out, const table<>&);
 };
 
+/**
+ * @brief Construct a new table object with column names
+ * 
+ * @param column_names Names of columns in the table
+ * 
+ * @exception std::illegal_argument Thrown when the no of column_names does not match the no of data elements
+ */
 template<typename... Ts>
 table<Ts...>::table(std::initializer_list<std::string> column_names)
         : column_names(column_names) {
@@ -39,6 +46,14 @@ table<Ts...>::table(std::initializer_list<std::string> column_names)
     }
 }
 
+/**
+ * @brief Construct a new table object with data and column names
+ * 
+ * @param column_names Names of columns in the table
+ * @param data Entries in the table
+ * 
+ * @exception std::illegal_argument Thrown when the no of column_names does not match the no of data elements
+ */
 template<typename... Ts>
 table<Ts...>::table(std::initializer_list<std::string> column_names, std::initializer_list<std::tuple<Ts...>> data)
         : column_names(column_names), data(data) {
@@ -48,15 +63,42 @@ table<Ts...>::table(std::initializer_list<std::string> column_names, std::initia
     }
 }
 
+/**
+ * @brief Inserts a new row in the table with the passed values
+ * 
+ * @param ts The values of each column
+ */
 template<typename... Ts>
 void table<Ts...>::insert(Ts... ts) {
     data.emplace_back(std::forward<Ts>(ts)...);
 }
 
+/**
+ * @brief Prints the row at the given index to an std::ostream
+ * 
+ * @param index Index of the table entry
+ * @param out std::ostream to write the entry to
+ */
 template<typename... Ts>
 void table<Ts...>::println(const int index, std::ostream& out) {
     out << "At index " << index << ": " << data[index] << '\n';
 }
+
+/**
+ * @brief Get the table data. This encapsulation breaking function only exists as I could not get the friend operator<< working :(
+ * 
+ * @return const std::vector<std::tuple<Ts...>>& Returns read-only internal data
+ */
+template<typename... Ts>
+[[nodiscard]] const auto& table<Ts...>::get_data() const { return data; }
+
+/**
+ * @brief Get the column names. This encapsulation breaking function only exists as I couldn't get the friend operator to access private members
+ * 
+ * @return const std::vector<std::string>& Returns read-only column names vector
+ */
+template<typename... Ts>
+[[nodiscard]] const auto& table<Ts...>::get_column_names() const { return column_names; }
 
 template<typename... Ts>
 std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
