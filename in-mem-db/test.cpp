@@ -50,4 +50,5 @@ int main(int, char**) {
     std::cout<< "\nTable 5:\n" << tbl5 << '\n';
     tbl5.insert("Ankur Satle", 1.75, 0);
     std::cout<< "\nTable 5:\n" << tbl5 << '\n';
+    //tbl5.insert(1.40, "Superman", 2.2); //Mismatched parameters do not compile, only correct ones do
 }
