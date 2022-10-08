@@ -65,6 +65,23 @@ namespace db
         }
     }
 
+    template<typename... Ts>
+    std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
+        std::apply([&out](const Ts&... elems) {
+            ((out << " | " << elems), ...);
+            out << " |";
+        }, tup);
+        return out;
+    }
+
+    template<typename T>
+    std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+        for (const auto& elem : v) {
+            out << elem << "\n";
+        }
+        return out;
+    }
+
     /**
      * @brief Inserts a new row in the table with the passed values
      * 
@@ -101,23 +118,6 @@ namespace db
      */
     template<typename... Ts>
     [[nodiscard]] const auto& table<Ts...>::get_column_names() const { return column_names; }
-
-    template<typename... Ts>
-    std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
-        std::apply([&out](const Ts&... elems){
-            ((out << " | " << elems), ...);
-            out << " |";
-        }, tup);
-        return out;
-    }
-
-    template<typename T>
-    std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
-        for (const auto& elem : v) {
-            out << elem << "\n";
-        }
-        return out;
-    }
 
     template<typename... Ts>
     std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
