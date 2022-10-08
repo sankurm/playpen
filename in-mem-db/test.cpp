@@ -15,7 +15,7 @@ int main(int, char**) {
     // optional to print all the data inside object
     std::cout<< "\nTable 1:\n" << tbl1 << '\n';
 
-    table<const char*, int, double> tbl2({"Name", "Id", "Amount"});
+    table<const char*, int, double> tbl2;
     // optional
     // tbl2.insertHeader( "Name", "ID", amount );
     tbl2.insert("Mr.K", 2157, 234.56);

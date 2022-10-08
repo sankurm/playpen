@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <tuple>
+#include <numeric>
 #include <string>
 #include <iostream>
 
@@ -11,7 +12,7 @@ class table
 {
     public:
         table() = default;
-        table(std::initializer_list<std::string> column_names); // : column_names(column_names) {}
+        table(std::initializer_list<std::string> column_names);
 
         void insert(Ts... ts);
 
@@ -69,7 +70,12 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 
 template<typename... Ts>
 std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
-    return out << tbl.get_column_names() << '\n' << tbl.get_data();
+    if (const auto& cols = tbl.get_column_names(); !cols.empty()) {
+        out << tbl.get_column_names() << '\n';
+        std::size_t no_chars = std::accumulate(begin(cols), end(cols), 0z, [](int sum, const std::string& col) { return sum += col.length(); });
+        out << std::string(no_chars + cols.size() - 1, '=') << '\n';
+    }
+    return out << tbl.get_data();
 }
 
 
