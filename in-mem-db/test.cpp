@@ -16,7 +16,7 @@ int main(int, char**) {
     db::table<std::string, int, double> tbl2;
 
     //Print empty table
-    std::cout<< "\nTable 2:\n" << tbl2 << '\n';
+    std::cout<< "\nEmpty Table 2 check:\n" << tbl2 << '\n';
 
     tbl2.insert("Mr.K", 2157, 234.56);
     tbl2.insert("Scott Meyers", 86436, 6899.99);
