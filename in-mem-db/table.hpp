@@ -66,10 +66,8 @@ namespace db
 
     template<typename... Ts>
     std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tup) {
-        std::apply([&out](const Ts&... elems) {
-            ((out << " | " << elems), ...);
-            out << " |";
-        }, tup);
+        out << " | ";
+        std::apply([&out](const Ts&... elems) { ((out << elems << " | "), ...); }, tup);
         return out;
     }
 
