@@ -51,7 +51,6 @@ public:
 private:
     std::shared_ptr<std::vector<std::tuple<Ts...>>> data_ptr;
     std::unordered_map<unsigned int, Index> indices;
-    static std::unordered_map<uintptr_t, std::shared_ptr<IndexManager>> managers;
 
     //Iterating through a tuple and populating index
     template<int I, typename... T>
@@ -139,9 +138,6 @@ void Table<Ts...>::insertRow(Types&&... vals){
     data_ptr->push_back(std::make_tuple(std::forward<Types>(vals)...));
     idx_mgr.addToIndex(data_ptr->size()-1);
 }
-
-template<typename... Ts>
-std::unordered_map<uintptr_t, std::shared_ptr<IndexManager<Ts...>>> IndexManager<Ts...>::managers;
 
 template<typename... Ts>
 IndexManager<Ts...>::IndexManager(std::shared_ptr<std::vector<std::tuple<Ts...>>> data_ptr): data_ptr(data_ptr) {}
