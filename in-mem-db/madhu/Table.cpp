@@ -173,7 +173,7 @@ void IndexManager<Ts...>::iterateAndPopulate(const std::tuple<T...>& tup, unsign
 
 template<typename... Ts>
 void IndexManager<Ts...>::addToIndex(unsigned long long row){
-    auto tup = data_ptr->at(row);
+    const auto& tup = data_ptr->at(row);
     iterateAndPopulate<0>(tup, row);
 }
 
