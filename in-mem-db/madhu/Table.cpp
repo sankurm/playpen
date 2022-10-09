@@ -12,13 +12,56 @@
 #include <utility>
 #include <vector>
 
+struct Index {
+    std::unordered_multimap<std::string, unsigned long long> index_map;
+
+    template<typename T>
+    void populate(T data, unsigned long long ind){
+        std::stringstream str;
+        str << data;
+        index_map.insert({str.str(), ind});
+    }
+
+    template<typename T>
+    std::vector<unsigned long long> getIndexItem(T data){
+        std::stringstream str;
+        str << data;
+        auto a = index_map.equal_range(str.str());
+        std::vector<unsigned long long> ret;
+        for(auto it = a.first; it != a.second; ++it){
+            ret.push_back(it->second);
+        }
+        return ret;
+    }
+};
+
 template<typename... Ts>
-class IndexManager;
+class IndexManager {
+public:
+    explicit IndexManager(std::shared_ptr<std::vector<std::tuple<Ts...>>>);
+
+    template<unsigned I>
+    void registerIndex();
+
+    void addToIndex(unsigned long long row);
+
+    template<unsigned I, typename T>
+    void searchIndex(const T& data);
+
+private:
+    std::shared_ptr<std::vector<std::tuple<Ts...>>> data_ptr;
+    std::unordered_map<unsigned int, Index> indices;
+    static std::unordered_map<uintptr_t, std::shared_ptr<IndexManager>> managers;
+
+    //Iterating through a tuple and populating index
+    template<int I, typename... T>
+    void iterateAndPopulate(const std::tuple<T...>& tup, unsigned long long row);
+};
 
 template <typename... Ts>
 class Table {
 public:
-    Table(): data_ptr(std::make_shared<std::vector<std::tuple<Ts...>>>()){
+    Table(): data_ptr(std::make_shared<std::vector<std::tuple<Ts...>>>()), idx_mgr(data_ptr) {
     }
 
     //Inserts a new row into the table
@@ -46,7 +89,7 @@ public:
 
 private:
     std::shared_ptr<std::vector<std::tuple<Ts...>>> data_ptr;
-    std::shared_ptr<IndexManager<Ts...>> idx_mgr_ptr;
+    IndexManager<Ts...> idx_mgr;
     std::vector<std::string> headers {sizeof...(Ts)};
 };
 
@@ -88,75 +131,19 @@ std::ostream& operator<<(std::ostream& out, Table<Ts...> const& db){
     return out;
 }
 
-struct Index {
-    std::unordered_multimap<std::string, unsigned long long> index_map;
-
-    template<typename T>
-    void populate(T data, unsigned long long ind){
-        std::stringstream str;
-        str << data;
-        index_map.insert({str.str(), ind});
-    }
-
-    template<typename T>
-    std::vector<unsigned long long> getIndexItem(T data){
-        std::stringstream str;
-        str << data;
-        auto a = index_map.equal_range(str.str());
-        std::vector<unsigned long long> ret;
-        for(auto it = a.first; it != a.second; ++it){
-            ret.push_back(it->second);
-        }
-        return ret;
-    }
-};
-
-template<typename... Ts>
-class IndexManager {
-public:
-    static std::shared_ptr<IndexManager> getIndexManager(const Table<Ts...>* db){
-        auto itr = managers.find((uintptr_t)(void*)db);
-        if (itr != managers.end()){
-            return itr->second;
-        } else {
-            std::shared_ptr<IndexManager> ptr(new IndexManager(*db));
-            managers.insert({((uintptr_t)(void*)db), ptr});
-            return ptr;
-        }
-    }
-
-    template<unsigned I>
-    void registerIndex();
-
-    void addToIndex(unsigned long long row);
-
-    template<unsigned I, typename T>
-    void searchIndex(const T& data);
-private:
-    explicit IndexManager(const Table<Ts...>&);
-
-    std::weak_ptr<std::vector<std::tuple<Ts...>>> data_ptr;
-    std::unordered_map<unsigned int, Index> indices;
-    static std::unordered_map<uintptr_t, std::shared_ptr<IndexManager>> managers;
-
-    //Iterating through a tuple and populating index
-    template<int I, typename... T>
-    void iterateAndPopulate(const std::tuple<T...>& tup, unsigned long long row);
-};
-
 template<typename... Ts>
 template<typename... Types>
 void Table<Ts...>::insertRow(Types&&... vals){
     static_assert(are_pack_elements_convertible<Table<Ts...>, Table<Types...>>::value, "DB Error: You can only insert values of the types that were used when creating the table");
     data_ptr->push_back(std::make_tuple(std::forward<Types>(vals)...));
-    idx_mgr_ptr->addToIndex(data_ptr->size()-1);
+    idx_mgr.addToIndex(data_ptr->size()-1);
 }
 
 template<typename... Ts>
 std::unordered_map<uintptr_t, std::shared_ptr<IndexManager<Ts...>>> IndexManager<Ts...>::managers;
 
 template<typename... Ts>
-IndexManager<Ts...>::IndexManager(const Table<Ts...>& db):data_ptr(db.data_ptr) {}
+IndexManager<Ts...>::IndexManager(std::shared_ptr<std::vector<std::tuple<Ts...>>> data_ptr): data_ptr(data_ptr) {}
 
 template<typename... Ts>
 template<unsigned I>
@@ -167,9 +154,8 @@ void IndexManager<Ts...>::registerIndex(){
     if (indices.find(I) ==  indices.end()){
         indices.insert({I, Index{}});
 
-        auto sh_ptr = data_ptr.lock();
-        for(decltype(sh_ptr->size()) i = 0; i < sh_ptr->size(); ++i){
-            auto tup = sh_ptr->at(i);
+        for(decltype(data_ptr->size()) i = 0; i < data_ptr->size(); ++i){
+            auto tup = data_ptr->at(i);
             auto elem = std::get<I>(tup);
             indices[I].populate(elem, i);
         }
@@ -190,8 +176,7 @@ void IndexManager<Ts...>::iterateAndPopulate(const std::tuple<T...>& tup, unsign
 
 template<typename... Ts>
 void IndexManager<Ts...>::addToIndex(unsigned long long row){
-    auto sh_ptr = data_ptr.lock();
-    auto tup = sh_ptr->at(row);
+    auto tup = data_ptr->at(row);
     iterateAndPopulate<0>(tup, row);
 }
 
@@ -202,11 +187,9 @@ void IndexManager<Ts...>::searchIndex(const T& data){
         auto vec = indices[I].getIndexItem(data);
         if(!vec.empty()){
             std::cout << "Search for '" << data << "', resulted in " << vec.size() << " result" << ((vec.size()>1)? "s.\n": ".\n");
-            if(auto sh_ptr = data_ptr.lock()){
-                for(auto i : vec){
-                    print((*sh_ptr)[i], std::index_sequence_for<Ts...>(), std::cout);
-                    std::cout << '\n';
-                }
+            for(auto i : vec){
+                print((*data_ptr)[i], std::index_sequence_for<Ts...>(), std::cout);
+                std::cout << '\n';
             }
         } else {
             std::cout << "Search for " << data << " on index field " << I << " returned 0 results";
@@ -220,10 +203,10 @@ template<typename... Ts>
 template<unsigned I>
 void Table<Ts...>::createIndex(){
     static_assert(I < sizeof...(Ts), "DB Error: You can create an index only on existing fields.");
-    if(!idx_mgr_ptr){
-        idx_mgr_ptr = IndexManager<Ts...>::getIndexManager(this);
-    }
-    idx_mgr_ptr->template registerIndex<I>();
+    //if(!idx_mgr){
+        //idx_mgr = IndexManager<Ts...>::getIndexManager(this);
+    //}
+    idx_mgr.template registerIndex<I>();
 }
 
 template<typename... Ts>
@@ -233,7 +216,7 @@ void Table<Ts...>::searchIndex(const T& data){
     using Type = typename std::tuple_element<I, std::tuple<Ts...>>::type;
     static_assert(std::is_convertible_v<T, Type>, "DB Error: The searched for item's type does not match"
                                                   " the type of the field on which this index was created");
-    idx_mgr_ptr->template searchIndex<I>(data);
+    idx_mgr.template searchIndex<I>(data);
 }
 
 int main(){
