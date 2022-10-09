@@ -74,7 +74,7 @@ void print(const std::tuple<Ts...> &tup, std::index_sequence<Is...>, std::ostrea
 template<typename... Ts>
 void Table<Ts...>::printRow(const unsigned rowId, std::ostream& out) const{
     if(!(rowId >= data_ptr->size())){
-        auto tup = (*data_ptr)[rowId];
+        const auto& tup = (*data_ptr)[rowId];
         print(tup, std::index_sequence_for<Ts...>(), out);
         out << "\n";
     }
