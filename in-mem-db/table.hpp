@@ -106,11 +106,12 @@ namespace db
     std::ostream &operator<<(std::ostream &out, const table<Ts...>& tbl) {
         if (const auto& cols = tbl.column_names; !cols.empty()) {
             out << " | ";
-            //std::copy(begin(cols), end(cols), std::ostream_iterator<std::string>(out, " | "));
-            std::ranges::copy(cols, std::ostream_iterator<std::string>(out, " | "));
-            std::size_t no_chars = std::accumulate(begin(cols), end(cols), 0z,
-                [](int sum, const std::string& col) { return sum += col.length(); });
-            out << "\n " << std::string(no_chars + 3 * cols.size() + 1, '=') << "\n";
+            std::size_t no_underline_chars = 2;   //"| " already printed above, ignoring initial space
+            //Print columns while summing up the chars written
+            std::ranges::transform(cols, std::ostream_iterator<std::string>(out, " | "),
+                [&no_underline_chars](const std::string& name) { no_underline_chars += name.length() + 3; return name; });
+            no_underline_chars -= 1;  //Deduct 1 - dont underline the trailing space
+            out << "\n " << std::string(no_underline_chars, '=') << "\n";
         }
         return out << tbl.data;
     }
