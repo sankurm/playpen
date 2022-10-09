@@ -82,8 +82,8 @@ void Table<Ts...>::printRow(const unsigned rowId, std::ostream& out) const{
 
 template<typename... Ts>
 std::ostream& operator<<(std::ostream& out, Table<Ts...> const& db){
-    for(decltype(db.data_ptr->size()) i = 0; i < db.data_ptr->size(); ++i){
-        db.printRow(i, out);
+    for (const auto& tup : (*db.data_ptr)) {
+        print(tup, std::index_sequence_for<Ts...>(), out);
     }
     return out;
 }
