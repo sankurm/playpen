@@ -137,7 +137,6 @@ private:
 
     std::weak_ptr<std::vector<std::tuple<Ts...>>> data_ptr;
     std::unordered_map<unsigned int, Index> indices;
-    Table<Ts...> const* table_ptr;
     static std::unordered_map<uintptr_t, std::shared_ptr<IndexManager>> managers;
 
     //Iterating through a tuple and populating index
@@ -157,7 +156,7 @@ template<typename... Ts>
 std::unordered_map<uintptr_t, std::shared_ptr<IndexManager<Ts...>>> IndexManager<Ts...>::managers;
 
 template<typename... Ts>
-IndexManager<Ts...>::IndexManager(const Table<Ts...>& db):data_ptr(db.data_ptr), table_ptr(&db){}
+IndexManager<Ts...>::IndexManager(const Table<Ts...>& db):data_ptr(db.data_ptr) {}
 
 template<typename... Ts>
 template<unsigned I>
@@ -205,7 +204,8 @@ void IndexManager<Ts...>::searchIndex(const T& data){
             std::cout << "Search for '" << data << "', resulted in " << vec.size() << " result" << ((vec.size()>1)? "s.\n": ".\n");
             if(auto sh_ptr = data_ptr.lock()){
                 for(auto i : vec){
-                    table_ptr->printRow(i, std::cout);
+                    print((*sh_ptr)[i], std::index_sequence_for<Ts...>(), std::cout);
+                    std::cout << '\n';
                 }
             }
         } else {
