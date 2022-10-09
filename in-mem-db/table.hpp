@@ -21,7 +21,7 @@ namespace db
 
             void insert(Ts... ts);
 
-            void println(const int index = 0, std::ostream& out = std::cout);
+            void println(const std::size_t index = 0, std::ostream& out = std::cout);
 
         private:
             std::vector<std::string> column_names;
@@ -96,8 +96,8 @@ namespace db
      * @param out std::ostream to write the entry to
      */
     template<typename... Ts>
-    void table<Ts...>::println(const int index, std::ostream& out) {
-        out << "At index " << index << ": " << data[index] << '\n';
+    void table<Ts...>::println(const std::size_t index, std::ostream& out) {
+        out << "At index " << index << ": " << data.at(index) << '\n';
     }
 
     template<typename... Ts>

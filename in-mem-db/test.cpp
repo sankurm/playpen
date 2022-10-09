@@ -57,4 +57,9 @@ int main(int, char**) {
 
     db::table<int, std::string, std::string, bool> tbl6({"Id", "Name", "Email", "Available"});
     std::cout << "\nPrinting empty table with column names:\n" << tbl6;
+    try {
+        tbl6.println(100);
+    } catch (const std::out_of_range& e) {
+        std::cout << "std::out_of_range exception for accessing invalid index: " << e.what() << '\n';
+    }
 }
