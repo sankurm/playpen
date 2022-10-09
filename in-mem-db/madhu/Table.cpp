@@ -127,6 +127,7 @@ template<typename... Ts>
 std::ostream& operator<<(std::ostream& out, Table<Ts...> const& db){
     for (const auto& tup : (*db.data_ptr)) {
         print(tup, std::index_sequence_for<Ts...>(), out);
+        out << '\n';
     }
     return out;
 }
