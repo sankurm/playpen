@@ -16,7 +16,7 @@ struct Index {
     std::unordered_multimap<std::string, unsigned long long> index_map;
 
     template<typename T>
-    void populate(T data, unsigned long long ind){
+    void populate(const T& data, unsigned long long ind){
         std::stringstream str;
         str << data;
         index_map.insert({str.str(), ind});
@@ -146,8 +146,8 @@ void IndexManager<Ts...>::registerIndex(){
         indices.insert({I, Index{}});
 
         for(decltype(data_ptr->size()) i = 0; i < data_ptr->size(); ++i){
-            auto tup = data_ptr->at(i);
-            auto elem = std::get<I>(tup);
+            const auto& tup = data_ptr->at(i);
+            const auto& elem = std::get<I>(tup);
             indices[I].populate(elem, i);
         }
     }
@@ -157,7 +157,7 @@ template<typename... Ts>
 template<int I, typename... T>
 void IndexManager<Ts...>::iterateAndPopulate(const std::tuple<T...>& tup, unsigned long long row){
     if (indices.find(I) != indices.end()){
-        auto elem = std::get<I>(tup);
+        const auto& elem = std::get<I>(tup);
         indices[I].populate(elem, row);
     }
     if constexpr(I < (sizeof...(T) - 1)){
