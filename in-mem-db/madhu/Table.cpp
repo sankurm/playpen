@@ -53,8 +53,8 @@ private:
     std::unordered_map<unsigned int, Index> indices;
 
     //Iterating through a tuple and populating index
-    template<int I, typename... T>
-    void iterateAndPopulate(const std::tuple<T...>& tup, unsigned long long row);
+    template<int I>
+    void iterateAndPopulate(const std::tuple<Ts...>& tup, unsigned long long row);
 };
 
 template <typename... Ts>
@@ -154,13 +154,13 @@ void IndexManager<Ts...>::registerIndex(){
 }
 
 template<typename... Ts>
-template<int I, typename... T>
-void IndexManager<Ts...>::iterateAndPopulate(const std::tuple<T...>& tup, unsigned long long row){
+template<int I>
+void IndexManager<Ts...>::iterateAndPopulate(const std::tuple<Ts...>& tup, unsigned long long row){
     if (indices.find(I) != indices.end()){
         const auto& elem = std::get<I>(tup);
         indices[I].populate(elem, row);
     }
-    if constexpr(I < (sizeof...(T) - 1)){
+    if constexpr(I < (sizeof...(Ts) - 1)){
         iterateAndPopulate<I+1>(tup, row);
     }
 }
