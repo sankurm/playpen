@@ -45,8 +45,8 @@ public:
 
     void addToIndex(unsigned long long row);
 
-    template<unsigned I, typename T>
-    void searchIndex(const T& data);
+    template<unsigned I>
+    void searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data);
 
 private:
     std::shared_ptr<std::vector<std::tuple<Ts...>>> data_ptr;
@@ -78,8 +78,8 @@ public:
 
     //Searches for an element in the column specified by
     //I. The column must have been indexed before this search.
-    template<unsigned I, typename T>
-    void searchIndex(const T& data);
+    template<unsigned I>
+    void searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data);
 
 //friends
     template<typename... T>
@@ -172,8 +172,8 @@ void IndexManager<Ts...>::addToIndex(unsigned long long row){
 }
 
 template<typename... Ts>
-template<unsigned I, typename T>
-void IndexManager<Ts...>::searchIndex(const T& data){
+template<unsigned I>
+void IndexManager<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data){
     if (indices.find(I) != indices.end()){
         auto vec = indices[I].getIndexItem(data);
         if(!vec.empty()){
@@ -201,12 +201,12 @@ void Table<Ts...>::createIndex(){
 }
 
 template<typename... Ts>
-template<unsigned int I, typename T>
-void Table<Ts...>::searchIndex(const T& data){
+template<unsigned I>
+void Table<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data){
     static_assert(I<sizeof...(Ts), "DB Error: The index to be searched should be a valid index");
-    using Type = typename std::tuple_element<I, std::tuple<Ts...>>::type;
-    static_assert(std::is_convertible_v<T, Type>, "DB Error: The searched for item's type does not match"
-                                                  " the type of the field on which this index was created");
+    //using Type = typename std::tuple_element<I, std::tuple<Ts...>>::type;
+    //static_assert(std::is_convertible_v<T, Type>, "DB Error: The searched for item's type does not match"
+                                                  //" the type of the field on which this index was created");
     idx_mgr.template searchIndex<I>(data);
 }
 
