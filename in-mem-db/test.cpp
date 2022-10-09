@@ -54,4 +54,7 @@ int main(int, char**) {
     tbl5.insert("Ankur Satle", 1.75, 0);
     std::cout<< "\nTable 5:\n" << tbl5 << '\n';
     //tbl5.insert(1.40, "Superman", 2.2); //Mismatched parameters do not compile, only correct ones do
+
+    db::table<int, std::string, std::string, bool> tbl6({"Id", "Name", "Email", "Available"});
+    std::cout << "\nPrinting empty table with column names:\n" << tbl6;
 }
