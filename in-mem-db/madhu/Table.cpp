@@ -92,12 +92,6 @@ private:
     std::vector<std::string> headers {sizeof...(Ts)};
 };
 
-template<typename... Ts>
-std::unique_ptr<Table<Ts...>> createTable(){
-    auto ptr = std::make_unique<Table<Ts...>>();
-    return ptr;
-}
-
 template <typename P0, typename P1>
 struct are_pack_elements_convertible;
 
@@ -217,27 +211,27 @@ void Table<Ts...>::searchIndex(const T& data){
 }
 
 int main(){
-    auto ptr = createTable<std::string,float, char, int>();
-    ptr->createIndex<0>();
-    ptr->insertRow("hello",2.0f, 'a', 32.0);
-    ptr->insertRow("hello", 18, 74, 1);
-    ptr->insertRow("beta", 12, 'z', 2);
-    ptr->insertRow("gamma",5.1f, 'x', 3);
-    ptr->insertRow("theta",20, 'y', 4);
-    ptr->createIndex<2>();
+    auto tbl = Table<std::string,float, char, int>();
+    tbl.createIndex<0>();
+    tbl.insertRow("hello",2.0f, 'a', 32.0);
+    tbl.insertRow("hello", 18, 74, 1);
+    tbl.insertRow("beta", 12, 'z', 2);
+    tbl.insertRow("gamma",5.1f, 'x', 3);
+    tbl.insertRow("theta",20, 'y', 4);
+    tbl.createIndex<2>();
     std::cout << "-----All Rows-----\n";
-    std::cout << *ptr;
+    std::cout << tbl;
     std::cout << "------------------\n";
-    ptr->createIndex<2>();
-    ptr->searchIndex<2>('J');
-    ptr->createIndex<1>();
-    ptr->searchIndex<1>(5.1);
-    ptr->searchIndex<0>("hello");
+    tbl.createIndex<2>();
+    tbl.searchIndex<2>('J');
+    tbl.createIndex<1>();
+    tbl.searchIndex<1>(5.1);
+    tbl.searchIndex<0>("hello");
     std::cout << "----Print Individually----\n";
-    ptr->printRow();
-    ptr->printRow(1);
-    ptr->printRow(2);
-    ptr->printRow(3);
-    ptr->printRow(4);
+    tbl.printRow();
+    tbl.printRow(1);
+    tbl.printRow(2);
+    tbl.printRow(3);
+    tbl.printRow(4);
     std::cout << "--------------------------\n";
 }
