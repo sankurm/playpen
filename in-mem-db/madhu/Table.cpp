@@ -78,8 +78,8 @@ public:
 
     //Searches for an element in the column specified by
     //I. The column must have been indexed before this search.
-    template<unsigned I>
-    void searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data);
+    template<unsigned I, typename Prediate>
+    void searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data, Prediate process);
 
 //friends
     template<typename... T>
@@ -193,8 +193,8 @@ void Table<Ts...>::createIndex(){
 }
 
 template<typename... Ts>
-template<unsigned I>
-void Table<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data) {
+template<unsigned I, typename Prediate>
+void Table<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data, Prediate process) {
     static_assert(I<sizeof...(Ts), "DB Error: The index to be searched should be a valid index");
     //using Type = typename std::tuple_element<I, std::tuple<Ts...>>::type;
     //static_assert(std::is_convertible_v<T, Type>, "DB Error: The searched for item's type does not match"
@@ -203,13 +203,17 @@ void Table<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>&
     if(!vec.empty()) {
         std::cout << "Search for '" << data << "', resulted in " << vec.size() << " result" << ((vec.size()>1)? "s.\n": ".\n");
         for(auto i : vec){
-            print((*data_ptr)[i], std::index_sequence_for<Ts...>(), std::cout);
-            std::cout << '\n';
+            std::invoke(std::forward<Prediate>(process), (*data_ptr)[i]);
         }
     } else {
         std::cout << "Search for " << data << " on index field " << I << " returned 0 results";
     }
 }
+
+auto println = [] <typename... Ts> (const std::tuple<Ts...>& tup) {
+    print(tup, std::index_sequence_for<Ts...>(), std::cout);
+    std::cout << '\n';
+};
 
 int main(){
     auto tbl = Table<std::string,float, char, int>();
@@ -224,10 +228,10 @@ int main(){
     std::cout << tbl;
     std::cout << "------------------\n";
     tbl.createIndex<2>();
-    tbl.searchIndex<2>('J');
+    tbl.searchIndex<2>('J', println);
     tbl.createIndex<1>();
-    tbl.searchIndex<1>(5.1);
-    tbl.searchIndex<0>("hello");
+    tbl.searchIndex<1>(5.1, println);
+    tbl.searchIndex<0>("hello", println);
     std::cout << "----Print Individually----\n";
     tbl.printRow();
     tbl.printRow(1);
