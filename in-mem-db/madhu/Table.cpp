@@ -78,8 +78,8 @@ public:
 
     //Searches for an element in the column specified by
     //I. The column must have been indexed before this search.
-    template<unsigned I, typename Prediate>
-    void searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data, Prediate process);
+    template<unsigned I, typename Predicate>
+    void searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data, Predicate&& process);
 
 //friends
     template<typename... T>
@@ -193,8 +193,8 @@ void Table<Ts...>::createIndex(){
 }
 
 template<typename... Ts>
-template<unsigned I, typename Prediate>
-void Table<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data, Prediate process) {
+template<unsigned I, typename Predicate>
+void Table<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>& data, Predicate&& process) {
     static_assert(I<sizeof...(Ts), "DB Error: The index to be searched should be a valid index");
     //using Type = typename std::tuple_element<I, std::tuple<Ts...>>::type;
     //static_assert(std::is_convertible_v<T, Type>, "DB Error: The searched for item's type does not match"
@@ -203,7 +203,7 @@ void Table<Ts...>::searchIndex(const std::tuple_element_t<I, std::tuple<Ts...>>&
     if(!vec.empty()) {
         std::cout << "Search for '" << data << "', resulted in " << vec.size() << " result" << ((vec.size()>1)? "s.\n": ".\n");
         for(auto i : vec){
-            std::invoke(std::forward<Prediate>(process), (*data_ptr)[i]);
+            std::invoke(std::forward<Predicate>(process), (*data_ptr)[i]);
         }
     } else {
         std::cout << "Search for " << data << " on index field " << I << " returned 0 results";
