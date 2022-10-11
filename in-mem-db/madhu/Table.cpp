@@ -11,22 +11,30 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <ranges>
+#include <concepts>
 
 struct Index {
     std::unordered_multimap<std::string, unsigned long long> index_map;
 
     template<typename T>
+    std::string to_key(const T& data) {
+        if constexpr (std::is_same_v<T, std::string>) {
+            return data;
+        } else if constexpr (std::is_convertible_v<T, std::string>) {
+            return static_cast<std::string>(data);
+        } else {
+            return std::to_string(data);
+        }
+    }
+    template<typename T>
     void populate(const T& data, unsigned long long ind){
-        std::stringstream str;
-        str << data;
-        index_map.insert({str.str(), ind});
+        index_map.insert({to_key(data), ind});
     }
 
     template<typename T>
     std::vector<unsigned long long> getIndexItem(T data){
-        std::stringstream str;
-        str << data;
-        auto a = index_map.equal_range(str.str());
+        auto a = index_map.equal_range(to_key(data));
         std::vector<unsigned long long> ret;
         for(auto it = a.first; it != a.second; ++it){
             ret.push_back(it->second);
@@ -145,6 +153,21 @@ void IndexManager<Ts...>::registerIndex(){
     if (indices.find(I) ==  indices.end()){
         indices.insert({I, Index{}});
 
+        /*std::unordered_multimap<std::string, unsigned long long> index_map;
+        auto entries = *data_ptr
+                        | std::views::transform([](const auto& tup) { return std::get<I>(tup); })
+                        | std::views::transform([i = 0](const auto& data) mutable -> std::pair<std::string, unsigned long long> {
+                            if constexpr (std::is_same_v<decltype(data), std::string>) {
+                                return {data, i++};
+                            } else {
+                                return {std::to_string(data), i++};
+                            }
+                        });
+                        //| std::ranges::to(index_map);
+        for (auto&& item : entries) {
+            index_map.insert(std::move(item));
+        }
+        std::cout << "index_map has " << index_map.size() << " entries\n";*/
         for(decltype(data_ptr->size()) i = 0; i < data_ptr->size(); ++i){
             const auto& tup = data_ptr->at(i);
             const auto& elem = std::get<I>(tup);
