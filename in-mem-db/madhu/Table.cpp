@@ -29,7 +29,7 @@ struct Index {
     }
     template<typename T>
     void populate(const T& data, unsigned long long ind){
-        index_map.insert({to_key(data), ind});
+        index_map.emplace(to_key(data), ind);
     }
 
     template<typename T>
@@ -168,10 +168,19 @@ void IndexManager<Ts...>::registerIndex(){
             index_map.insert(std::move(item));
         }
         std::cout << "index_map has " << index_map.size() << " entries\n";*/
-        for(decltype(data_ptr->size()) i = 0; i < data_ptr->size(); ++i){
-            const auto& tup = data_ptr->at(i);
-            const auto& elem = std::get<I>(tup);
-            indices[I].populate(elem, i);
+
+        /* This works but is unreasonably verbose! 
+        using namespace std::views;
+        auto index_elems = *data_ptr
+            | transform([](const auto& tup) { return std::get<I>(tup); })
+            | transform([&index = indices[I]](const auto& data) { return index.to_key(data); })
+            | transform([i = 0ULL](const auto& key) mutable { return std::make_pair(key, i++); });
+        for (auto&& elem : index_elems) {
+            indices[I].index_map.insert(std::move(elem));
+        }*/
+        unsigned long long i = 0;
+        for (const auto& row : *data_ptr) {
+            indices[I].index_map.emplace(indices[I].to_key(std::get<I>(row)), i++);
         }
     }
 }
