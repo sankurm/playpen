@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <functional>
 #include <ranges>
 #include <concepts>
 
@@ -36,9 +37,10 @@ struct Index {
     std::vector<unsigned long long> getIndexItem(T data){
         auto a = index_map.equal_range(to_key(data));
         std::vector<unsigned long long> ret;
-        for(auto it = a.first; it != a.second; ++it){
-            ret.push_back(it->second);
-        }
+        std::transform(a.first, a.second, std::back_inserter(ret), [](const auto& p) { return p.second; });
+        //using elem_type = std::pair<std::string, unsigned long long>;
+        //auto second = std::mem_fn(&elem_type::second);
+        //std::transform(a.first, a.second, std::back_inserter(ret), second);
         return ret;
     }
 };
