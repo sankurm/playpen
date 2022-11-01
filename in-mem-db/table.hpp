@@ -1,5 +1,5 @@
-#ifndef TABLE_HPP
-#define TABLE_HPP
+#ifndef DB_TABLE_HPP
+#define DB_TABLE_HPP
 
 #include <vector>
 #include <tuple>
@@ -115,4 +115,4 @@ namespace db
     }
 }
 
-#endif
+#endif  //DB_TABLE_HPP
