@@ -9,6 +9,7 @@
 #include <ranges>
 #include <functional>
 #include <string_view>
+#include <cctype>
 #include <variant>
 #include <format>
 #include <list>
@@ -45,10 +46,17 @@ void max_gap_freq() {
 
 //Count of every word in a string
 void word_count() {
-    std::string s = "Some long string of words as it's only words";
+    using namespace std::ranges::views;
+    std::string s = "Some long string of words as it's  only Words";
     std::map<std::string, int> freq;
-    std::ranges::for_each(std::ranges::views::split(s, ' '),
-        [&freq](const auto w) { std::cout << w[0] << ' '; });
+    std::ranges::for_each(split(s, ' ') | filter([](const auto r) { return !std::ranges::empty(r); })
+            //| transform([](const auto r) { return std::ranges::transform_view(r, std::tolower); })
+        , [&freq](const auto w) { ++freq[std::string{begin(w), end(w)}]; });
+    //std::ranges::transform_view(std::ranges::views::split(s, ' '), [&freq](std::string_view w){
+    //    std::string str{w};
+    //    ++freq[str];
+    //});
+    for (const auto& [k, v] : freq) { std::cout << k << " -> " << v << '\n'; }
 }
 
 //Is a string a palindrome?
@@ -113,4 +121,5 @@ int main() {
     count_chars_arr();
     return 0;
 }
+
 
